@@ -47,18 +47,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Set a shorter timeout to prevent infinite loading
         timeoutId = setTimeout(() => {
           if (mounted) {
-            console.warn('⚠️ Auth initialization timeout - proceeding without session');
+            console.warn('⚠️ Tempo limite na inicialização da autenticação - conexão com Supabase demorou mais que o esperado. Prosseguindo sem sessão.');
+            alert('A conexão com o Supabase está lenta ou indisponível. Algumas funcionalidades podem não estar disponíveis.');
           }
-        }, 5000); // 5 seconds timeout
+        }, 8000); // 8 segundos de timeout geral
         
         // Get initial session with shorter timeout
         try {
           const controller = new AbortController();
-          const sessionTimeoutId = setTimeout(() => controller.abort(), 3000);
+          const sessionTimeoutId = setTimeout(() => controller.abort(), 6000); // 6 segundos para o getSession
           
           const { data: { session }, error } = await supabase.auth.getSession();
           
           clearTimeout(sessionTimeoutId);
+          clearTimeout(timeoutId); // Limpa timeout geral assim que getSession responde
 
           if (error) {
             console.warn('⚠️ Session error:', error.message);
